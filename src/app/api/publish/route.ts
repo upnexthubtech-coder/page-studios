@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing slug or sections' }, { status: 400 });
   }
 
-  const dir = path.join(process.cwd(), 'public', 'releases', slug);
+  // Use /tmp (writable on Vercel) instead of public/
+  const dir = path.join('/tmp', 'releases', slug);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort();
@@ -50,8 +51,21 @@ export async function POST(req: NextRequest) {
   }
 
   const newVersion = `${newMajor}.${newMinor}.${newPatch}`;
-  const snapshot = { pageId, slug, title, sections, version: newVersion, changelog: bump.changelog, publishedAt: new Date().toISOString() };
+  const snapshot = {
+    pageId,
+    slug,
+    title,
+    sections,
+    version: newVersion,
+    changelog: bump.changelog,
+    publishedAt: new Date().toISOString(),
+  };
+
   fs.writeFileSync(path.join(dir, `${newVersion}.json`), JSON.stringify(snapshot, null, 2));
 
-  return NextResponse.json({ version: newVersion, changelog: bump.changelog });
+  return NextResponse.json({
+    version: newVersion,
+    changelog: bump.changelog,
+    snapshot,             // optional: send the snapshot back for the UI
+  });
 }
