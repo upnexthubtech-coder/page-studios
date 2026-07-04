@@ -1,18 +1,15 @@
-import { NextResponse } from 'next/server';
-import { getPage } from '@/lib/contentfulClient';
+import { notFound } from 'next/navigation';
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export default async function PreviewPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  try {
-    const page = await getPage(slug);
-    if (!page) {
-      return NextResponse.json({ error: 'Page not found', slug }, { status: 404 });
-    }
-    return NextResponse.json(page);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
+  return (
+    <main className="p-8">
+      <h1>Preview works for: {slug}</h1>
+      <p>Contentful integration will load after env vars are verified.</p>
+    </main>
+  );
 }
