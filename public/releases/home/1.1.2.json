@@ -1,0 +1,19 @@
+{
+  "pageId": "42wtyOrwTuu8gXilkzLUma",
+  "slug": "home",
+  "title": "home",
+  "sections": [
+    {
+      "id": "3hlkMtdg9cW9a5ln7WVzQ6",
+      "type": "hero",
+      "props": {
+        "headline": "Welcome",
+        "subheadline": "This is a demo",
+        "backgroundImage": null
+      }
+    }
+  ],
+  "version": "1.1.2",
+  "changelog": "",
+  "publishedAt": "2026-07-04T20:27:39.647Z"
+}
