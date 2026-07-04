@@ -1,17 +1,30 @@
 import { createClient } from 'contentful';
 
-const client = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_DELIVERY_TOKEN!,
-  environment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
-});
+let client: ReturnType<typeof createClient> | null = null;
+let previewClient: ReturnType<typeof createClient> | null = null;
 
-const previewClient = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_PREVIEW_TOKEN!,
-  environment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
-  host: 'preview.contentful.com',
-});
+function getClient(preview = false) {
+  if (preview) {
+    if (!previewClient) {
+      previewClient = createClient({
+        space: process.env.CONTENTFUL_SPACE_ID!,
+        accessToken: process.env.CONTENTFUL_PREVIEW_TOKEN!,
+        environment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
+        host: 'preview.contentful.com',
+      });
+    }
+    return previewClient;
+  }
+
+  if (!client) {
+    client = createClient({
+      space: process.env.CONTENTFUL_SPACE_ID!,
+      accessToken: process.env.CONTENTFUL_DELIVERY_TOKEN!,
+      environment: process.env.CONTENTFUL_ENVIRONMENT || 'master',
+    });
+  }
+  return client;
+}
 
 export type SectionType = 'hero' | 'featureGrid' | 'testimonial' | 'cta';
 
@@ -62,7 +75,7 @@ function mapSection(raw: any): Section {
 }
 
 export async function getPage(slug: string, preview = false): Promise<Page | null> {
-  const c = preview ? previewClient : client;
+  const c = getClient(preview);
   const entries = await c.getEntries({
     content_type: 'pageStudio',
     'fields.slug': slug,
