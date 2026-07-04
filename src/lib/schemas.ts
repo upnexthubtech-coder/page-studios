@@ -28,10 +28,10 @@ const ctaSchema = z.object({
 });
 
 export const sectionSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('hero'), props: heroSchema }),
-  z.object({ type: z.literal('featureGrid'), props: featureGridSchema }),
-  z.object({ type: z.literal('testimonial'), props: testimonialSchema }),
-  z.object({ type: z.literal('cta'), props: ctaSchema }),
+  z.object({ type: z.literal('hero'), id: z.string(), props: heroSchema }),
+  z.object({ type: z.literal('featureGrid'), id: z.string(), props: featureGridSchema }),
+  z.object({ type: z.literal('testimonial'), id: z.string(), props: testimonialSchema }),
+  z.object({ type: z.literal('cta'), id: z.string(), props: ctaSchema }),
 ]);
 
 export const pageSchema = z.object({
