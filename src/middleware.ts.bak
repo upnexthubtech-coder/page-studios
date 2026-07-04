@@ -1,0 +1,20 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const role = request.cookies.get('role')?.value || 'viewer';
+
+  if (request.nextUrl.pathname.startsWith('/studio') && role !== 'editor' && role !== 'publisher') {
+    return NextResponse.redirect(new URL('/preview/home', request.url));
+  }
+
+  if (request.nextUrl.pathname.startsWith('/api/publish') && role !== 'publisher') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/studio/:path*', '/api/publish'],
+};
