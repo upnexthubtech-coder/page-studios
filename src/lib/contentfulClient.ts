@@ -85,12 +85,14 @@ export async function getPage(slug: string, preview = false): Promise<Page | nul
   if (entries.items.length === 0) return null;
   const rawPage = entries.items[0];
 
-  const sections = rawPage.fields.sections?.map(mapSection) || [];
+  // TypeScript fix: cast sections to an array of any
+  const rawSections: any[] = (rawPage.fields as any).sections || [];
+  const sections = rawSections.map(mapSection);
 
   return {
     pageId: rawPage.sys.id,
-    slug: rawPage.fields.slug,
-    title: rawPage.fields.title,
+    slug: rawPage.fields.slug as string,
+    title: rawPage.fields.title as string,
     sections,
   };
 }
