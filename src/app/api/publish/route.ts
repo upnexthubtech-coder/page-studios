@@ -5,6 +5,16 @@ import { computeBump, parseVersion } from '@/lib/diffUtils';
 import { Section } from '@/lib/contentfulClient';
 
 export async function POST(req: NextRequest) {
+  // ---------- RBAC (server‑side) ----------
+  const cookieHeader = req.headers.get('cookie') || '';
+  const roleMatch = cookieHeader.match(/(?:^|;\s*)role=([^;]*)/);
+  const role = roleMatch ? roleMatch[1] : 'viewer';
+
+  if (role !== 'publisher') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+  // ----------------------------------------
+
   const { slug, title, pageId, sections } = await req.json();
   if (!slug || !sections) {
     return NextResponse.json({ error: 'Missing slug or sections' }, { status: 400 });
